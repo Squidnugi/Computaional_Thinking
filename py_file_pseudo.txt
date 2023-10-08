@@ -1,0 +1,73 @@
+IMPORT csv
+
+
+
+
+
+DEFINE FUNCTION bucket_sort_csv(INPUT_file, output_file, column_index):
+
+    # Create empty buckets
+
+    SET buckets TO {}
+
+
+
+    # Read the CSV file and fill the buckets
+
+    with open(INPUT_file, 'r') as csv_file:
+
+        SET csv_reader TO csv.reader(csv_file)
+
+        SET header TO next(csv_reader)  # Read the header row
+
+
+
+        FOR row IN csv_reader:
+
+            SET value TO float(row[column_index])  # Assuming the values to be sorted are floats
+
+            IF value IN buckets:
+
+                buckets[value].append(row)
+
+            ELSE:
+
+                SET buckets[value] TO [row]
+
+
+
+    # Sort the buckets by keys (values) and concatenate them
+
+    SET sorted_data TO []
+
+    FOR key IN sorted(buckets.keys()):
+
+        sorted_data.extend(buckets[key])
+
+
+
+    # Write the sorted data to a new CSV file
+
+    with open(output_file, 'w', newline='') as csv_output:
+
+        SET csv_writer TO csv.writer(csv_output)
+
+        csv_writer.writerow(header)  # Write the header row
+
+        csv_writer.writerows(sorted_data)
+
+
+
+
+
+# Example usage:
+
+SET INPUT_file TO 'INPUT.csv'
+
+SET output_file TO 'sorted_output.csv'
+
+SET column_index_to_sort TO 0  # Change this to the column index you want to sort by
+
+
+
+bucket_sort_csv(INPUT_file, output_file, column_index_to_sort)
