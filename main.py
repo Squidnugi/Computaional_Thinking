@@ -1,70 +1,45 @@
 # Python3 program to sort an array
 # using bucket sort
 import sys
+import time
+import csv
+import random
 
 
-#https://www.programiz.com/dsa/merge-sort
-def mergeSort(array):
-    if len(array) > 1:
+def merge_sort(lst):
+    if len(lst) <= 1:
+        return lst
 
-        #  r is the point where the array is divided into two subarrays
-        r = len(array)//2
-        L = array[:r]
-        M = array[r:]
+    mid = len(lst) // 2
+    left_list = merge_sort(lst[:mid])
+    right_list = merge_sort(lst[mid:])
 
-        # Sort the two halves
-        mergeSort(L)
-        mergeSort(M)
+    return merge(left_list, right_list)
 
-        i = j = k = 0
+def merge(left_list, right_list):
+    sorted_list = []
+    left_list_index = right_list_index = 0
 
-        # Until we reach either end of either L or M, pick larger among
-        # elements L and M and place them in the correct position at A[p..r]
-        while i < len(L) and j < len(M):
-            if L[i] < M[j]:
-                array[k] = L[i]
-                i += 1
-            else:
-                array[k] = M[j]
-                j += 1
-            k += 1
+    # Merge smaller elements first
+    while left_list_index < len(left_list) and right_list_index < len(right_list):
+        if left_list[left_list_index] <= right_list[right_list_index]:
+            sorted_list.append(left_list[left_list_index])
+            left_list_index += 1
+        else:
+            sorted_list.append(right_list[right_list_index])
+            right_list_index += 1
 
-        # When we run out of elements in either L or M,
-        # pick up the remaining elements and put in A[p..r]
-        while i < len(L):
-            array[k] = L[i]
-            i += 1
-            k += 1
+    # If left list has more items, append them to sorted list
+    while left_list_index < len(left_list):
+        sorted_list.append(left_list[left_list_index])
+        left_list_index += 1
 
-        while j < len(M):
-            array[k] = M[j]
-            j += 1
-            k += 1
+    # If right list has more items, append them to sorted list
+    while right_list_index < len(right_list):
+        sorted_list.append(right_list[right_list_index])
+        right_list_index += 1
 
-#https://www.programiz.com/dsa/bucket-sort
-def bucketSort(array):
-    bucket = []
-
-    # Create empty buckets
-    for i in range(len(array)):
-        bucket.append([])
-
-    # Insert elements into their respective buckets
-    for j in array:
-        index_b = int(10 * j)
-        bucket[index_b].append(j)
-
-    # Sort the elements of each bucket
-    for i in range(len(array)):
-        bucket[i] = sorted(bucket[i])
-
-    # Get the sorted elements
-    k = 0
-    for i in range(len(array)):
-        for j in range(len(bucket[i])):
-            array[k] = bucket[i][j]
-            k += 1
-    return array
+    return sorted_list
 
 
 
@@ -107,22 +82,51 @@ def printList(array):
 # Driver Code
 
 
-if __name__ == '__main__':
-    #merge sort
-    array = [6, 5, 12, 10, 9, 1]
 
-    mergeSort(array)
+if __name__ == '__main__':
+    starting_array = []
+    filename = "large_file.csv"
+  # Define the number of rows and columns you want in your CSV file
+    num_rows = 100
+    num_cols = 1
+    # Open the file in write mode
+    with open(filename, 'w', newline='') as csvfile:
+      writer = csv.writer(csvfile)
+
+    # Write the header (optional)
+      #header = [f"Column{i+1}" for i in range(num_cols)]
+      #writer.writerow(header)
+
+    # Write the data rows
+      for _ in range(num_rows):
+        row = [random.randint(0, 100) for _ in range(num_cols)]
+        writer.writerow(row)
+
+    print(f"Created a CSV file '{filename}' with {num_rows} rows and {num_cols} columns.")
+    with open(filename, 'r') as csvfile:
+      reader = csv.reader(csvfile)
+      for i in reader:
+        starting_array.append(int(i[0]))
+    print(starting_array)
+    #merge sort
+    merge_start_time = time.time()
+    merge = merge_sort(starting_array)
+
 
     print("Sorted array is: ")
-    printList(array)
-
+    print(merge)
+    merge_end_time = time.time()
     #bucket Sort
-    array = [.42, .32, .33, .52, .37, .47, .51]
+    bucket_start_time = time.time()
+    print(starting_array)
+    bucket = bucketSort(starting_array)
+    
     print("Sorted Array in descending order is")
-    print(bucketSort(array))
-
+    print(bucket)
+    bucket_end_time = time.time()
     #binary Search
-    array = [3, 4, 5, 6, 7, 8, 9]
+    binary_start_time = time.time()
+    array = merge
     x = 4
 
     result = binarySearch(array, x, 0, len(array) - 1)
@@ -131,9 +135,11 @@ if __name__ == '__main__':
         print("Element is present at index " + str(result))
     else:
         print("Not found")
+    binary_end_time = time.time()
 
     #linear Search
-    array = [2, 4, 0, 1, 9]
+    linear_start_time = time.time()
+    array = bucket
     x = 1
     n = len(array)
     result = linearSearch(array, n, x)
@@ -141,3 +147,8 @@ if __name__ == '__main__':
         print("Element not found")
     else:
         print("Element found at index: ", result)
+    linear_end_time = time.time()
+    print(f"""Merge time: {round((merge_end_time - merge_start_time) * 1000)}ms
+Bucket time: {(bucket_end_time - bucket_start_time) * 1000}ms
+Binary time: {(binary_end_time - binary_start_time) * 1000}ms
+Linear time: {(linear_end_time - linear_start_time) * 1000}ms""")
