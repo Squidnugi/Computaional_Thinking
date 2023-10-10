@@ -41,7 +41,25 @@ def merge(left_list, right_list):
 
     return sorted_list
 
-
+def bucket_sort(arr):
+    # 1. Create empty buckets
+    buckets = [[] for _ in range(len(arr))]
+    
+    # 2. Insert elements into their respective buckets
+    for num in arr:
+        index_b = int(num * len(buckets))
+        buckets[index_b].append(num)
+    
+    # 3. Sort each bucket individually
+    for bucket in buckets:
+        bucket.sort()
+    
+    # 4. Concatenate all buckets into arr
+    i = 0
+    for bucket in buckets:
+        for num in bucket:
+            arr[i] = num
+            i += 1
 
 
 #https://www.programiz.com/dsa/linear-search
@@ -60,7 +78,6 @@ def binarySearch(array, x, low, high):
     while low <= high:
 
         mid = low + (high - low)//2
-
         if array[mid] == x:
             return mid
 
@@ -81,7 +98,46 @@ def printList(array):
 
 # Driver Code
 
+def do_merge(array):
+  merge_start_time = time.time()
+  merge = merge_sort(starting_array)
+  merge_end_time = time.time()
+  return merge, merge_start_time, merge_end_time
 
+def do_bucket(array):
+    bucket_start_time = time.time()
+    print(starting_array)
+    bucket = bucketSort(array)
+    
+    print("Sorted Array in descending order is")
+    print(bucket)
+    bucket_end_time = time.time()
+    return bucket, bucket_start_time, bucket_end_time
+
+def do_linear(array):
+    linear_start_time = time.time()
+    x = 1
+    n = len(array)
+    result = linearSearch(array, n, x)
+    if (result == -1):
+        print("Element not found")
+    else:
+        print("Element found at index: ", result)
+    linear_end_time = time.time()
+    return result, linear_start_time, linear_end_time
+
+def do_binary(array):
+    binary_start_time = time.time()
+    x = 4
+
+    result = binarySearch(array, x, 0, len(array) - 1)
+
+    if result != -1:
+        print("Element is present at index " + str(result))
+    else:
+        print("Not found")
+    binary_end_time = time.time()
+    return result, binary_start_time, binary_end_time
 
 if __name__ == '__main__':
     starting_array = []
@@ -109,46 +165,12 @@ if __name__ == '__main__':
         starting_array.append(int(i[0]))
     print(starting_array)
     #merge sort
-    merge_start_time = time.time()
-    merge = merge_sort(starting_array)
-
-
-    print("Sorted array is: ")
-    print(merge)
-    merge_end_time = time.time()
+    output = do_merge(starting_array)
     #bucket Sort
-    bucket_start_time = time.time()
-    print(starting_array)
-    bucket = bucketSort(starting_array)
-    
-    print("Sorted Array in descending order is")
-    print(bucket)
-    bucket_end_time = time.time()
+    #output = do_bucket(starting_array)
     #binary Search
-    binary_start_time = time.time()
-    array = merge
-    x = 4
-
-    result = binarySearch(array, x, 0, len(array) - 1)
-
-    if result != -1:
-        print("Element is present at index " + str(result))
-    else:
-        print("Not found")
-    binary_end_time = time.time()
-
+    #output = do_binary(output[0])
     #linear Search
-    linear_start_time = time.time()
-    array = bucket
-    x = 1
-    n = len(array)
-    result = linearSearch(array, n, x)
-    if (result == -1):
-        print("Element not found")
-    else:
-        print("Element found at index: ", result)
-    linear_end_time = time.time()
-    print(f"""Merge time: {round((merge_end_time - merge_start_time) * 1000)}ms
-Bucket time: {(bucket_end_time - bucket_start_time) * 1000}ms
-Binary time: {(binary_end_time - binary_start_time) * 1000}ms
-Linear time: {(linear_end_time - linear_start_time) * 1000}ms""")
+    #output = do_linear(output)
+    print(output)
+    print(f"Time: {(output[2] - output[1]) * 1000}ms")
