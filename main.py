@@ -41,25 +41,52 @@ def merge(left_list, right_list):
 
     return sorted_list
 
-def bucket_sort(arr):
-    # 1. Create empty buckets
-    buckets = [[] for _ in range(len(arr))]
-    
-    # 2. Insert elements into their respective buckets
-    for num in arr:
-        index_b = int(num * len(buckets))
-        buckets[index_b].append(num)
-    
-    # 3. Sort each bucket individually
-    for bucket in buckets:
-        bucket.sort()
-    
-    # 4. Concatenate all buckets into arr
-    i = 0
-    for bucket in buckets:
-        for num in bucket:
-            arr[i] = num
-            i += 1
+
+def bucket_sort(lst):
+  # Find the maximum and minimum values in the list
+  max_val = max(lst)
+  min_val = min(lst)
+
+  # Calculate the range and size of each bucket
+  range_val = max_val - min_val + 1
+  bucket_size = range_val // len(lst) + 1
+
+  # Create an empty list of buckets
+  buckets = [[] for _ in range(len(lst))]
+
+  # Distribute the elements into the buckets based on their value
+  for x in lst:
+    # Calculate the index of the bucket for x
+    index = (x - min_val) // bucket_size
+    # Append x to the corresponding bucket
+    buckets[index].append(x)
+
+  # Sort each bucket individually using insertion sort
+  for i in range(len(buckets)):
+    # Define a function to perform insertion sort on a list
+    def insertion_sort(lst):
+      # Loop through the list from the second element
+      for j in range(1, len(lst)):
+        # Store the current element as key
+        key = lst[j]
+        # Compare key with the previous elements and move them to the right if they are larger
+        k = j - 1
+        while k >= 0 and lst[k] > key:
+          lst[k + 1] = lst[k]
+          k -= 1
+        # Insert key at the correct position
+        lst[k + 1] = key
+
+    # Sort the current bucket using insertion sort
+    insertion_sort(buckets[i])
+
+  # Concatenate all the sorted buckets into a single list
+  result = []
+  for bucket in buckets:
+    result.extend(bucket)
+
+  # Return the sorted list
+  return result
 
 
 #https://www.programiz.com/dsa/linear-search
@@ -100,14 +127,14 @@ def printList(array):
 
 def do_merge(array):
   merge_start_time = time.time()
-  merge = merge_sort(starting_array)
+  merge = merge_sort(array)
   merge_end_time = time.time()
   return merge, merge_start_time, merge_end_time
 
 def do_bucket(array):
     bucket_start_time = time.time()
-    print(starting_array)
-    bucket = bucketSort(array)
+    print(array)
+    bucket = bucket_sort(array)
     
     print("Sorted Array in descending order is")
     print(bucket)
@@ -165,9 +192,9 @@ if __name__ == '__main__':
         starting_array.append(int(i[0]))
     print(starting_array)
     #merge sort
-    output = do_merge(starting_array)
+    #output = do_merge(starting_array)
     #bucket Sort
-    #output = do_bucket(starting_array)
+    output = do_bucket(starting_array)
     #binary Search
     #output = do_binary(output[0])
     #linear Search
